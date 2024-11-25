@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Flash Card</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="flashcard-container">
+    <div class="flashcard">
+      <div class="front" id="question">Question goes here</div>
+      <div class="back" id="answer">Answer goes here</div>
+    </div>
+  </div>
+  <div class="counter" id="counter">Question 1 of 3</div>
+  <button onclick="nextFlashCard()">Next Question</button>
+
+  <div class="finish-page" id="finishPage">
+    <h1>Congratulations!</h1>
+    <p>You have completed the test.</p>
+    <button onclick="restartTest()">Restart Test</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
