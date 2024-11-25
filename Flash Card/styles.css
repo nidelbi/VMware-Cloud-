@@ -1,0 +1,106 @@
+body {
+font-family: 'Poppins', sans-serif;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+margin: 0;
+background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+color: #fff;
+}
+
+.flashcard-container {
+perspective: 1200px;
+width: 100%;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+
+.flashcard {
+width: 700px; /* Fixed width */
+background: linear-gradient(135deg, #ffffff 0%, #f3f3f3 100%);
+border-radius: 25px;
+box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+padding: 30px; /* Add padding for text spacing */
+box-sizing: border-box;
+text-align: center;
+transition: transform 0.6s ease, height 0.3s ease; /* Smooth height and flip animation */
+transform-style: preserve-3d;
+cursor: pointer;
+}
+
+.flashcard.flip .front {
+display: none; /* Hide front content on flip */
+}
+
+.flashcard.flip .back {
+display: block; /* Show back content on flip */
+}
+
+.flashcard .front,
+.flashcard .back {
+font-size: 1.8rem; /* Adjust font size for readability */
+font-weight: bold;
+word-wrap: break-word;
+white-space: pre-wrap;
+overflow: visible;
+}
+
+.flashcard .front {
+background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+color: #ffffff;
+border-radius: 25px;
+padding: 20px;
+}
+
+.flashcard .back {
+display: none;
+background: linear-gradient(135deg, #f3f3f3 0%, #e8e8e8 100%);
+color: #333;
+border-radius: 25px;
+padding: 20px;
+}
+
+.counter {
+margin: 20px;
+font-size: 1.4rem;
+}
+
+button {
+margin-top: 20px;
+padding: 15px 30px;
+background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+border: none;
+border-radius: 10px;
+color: white;
+font-size: 1.2rem;
+font-weight: bold;
+cursor: pointer;
+box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+transition: all 0.3s ease;
+}
+
+button:hover {
+background: linear-gradient(135deg, #feb47b 0%, #ff7e5f 100%);
+transform: scale(1.1);
+}
+
+.finish-page {
+display: none;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+text-align: center;
+}
+
+.finish-page h1 {
+font-size: 2.5rem;
+margin-bottom: 20px;
+}
+
+.finish-page p {
+font-size: 1.4rem;
+margin-bottom: 30px;
+}
