@@ -1,106 +1,94 @@
-let flashcards = [];
-let currentIndex = 0;
-
-async function loadQuestions() {
-    try {
-        const response = await fetch('questions.json'); // Adjust path if necessary
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        flashcards = await response.json();
-        if (flashcards.length === 0) {
-            throw new Error("No questions found in the JSON file.");
-        }
-        loadFlashCard();
-    } catch (error) {
-        console.error("Error loading questions:", error);
-        document.getElementById("question").innerText = "Failed to load questions.";
-        document.getElementById("counter").innerText = "Check console for details.";
-    }
-}
-
-function loadFlashCard() {
-    if (flashcards.length === 0) return;
-
+const flashcards = [
+    { question: "What is 2 + 2?", answer: "4" },
+    {
+      question:
+        "This is a very long text that needs to fit dynamically within the card. It will adjust the card size accordingly so that the content is displayed properly.",
+      answer: "The answer is dynamically displayed."
+    },
+    { question: "What is the square root of 16?", answer: "4" },
+  ];
+  let currentIndex = 0;
+  
+  function loadFlashCard() {
     const card = flashcards[currentIndex];
-
-    // Set the question and answer content
+  
+    // Load question and answer
     document.getElementById("question").innerText = card.question;
     document.getElementById("answer").innerText = card.answer;
-
-    // Ensure the card shows the question initially
+  
+    // Ensure the card is showing the question initially
     const flashcard = document.querySelector(".flashcard");
     flashcard.classList.remove("flip");
-
+  
     // Adjust card size dynamically based on content
     adjustCardSize();
-
-    // Update the question counter
+  
+    // Update counter
     document.getElementById("counter").innerText = `Question ${currentIndex + 1} of ${flashcards.length}`;
-}
-
-function adjustCardSize() {
+  }
+  
+  function adjustCardSize() {
     const flashcard = document.querySelector(".flashcard");
     const questionElement = document.getElementById("question");
     const answerElement = document.getElementById("answer");
-
-    // Determine the taller content (question or answer)
+  
+    // Dynamically set height based on the taller of the two (question or answer)
     const questionHeight = questionElement.scrollHeight;
     const answerHeight = answerElement.scrollHeight;
-
-    // Set card height based on the taller content
-    flashcard.style.height = `${Math.max(questionHeight, answerHeight) + 60}px`;
+  
+    // Set the height dynamically
+    flashcard.style.height = `${Math.max(questionHeight, answerHeight) + 60}px`; // Add extra padding
     flashcard.style.margin = "0 auto"; // Center the card horizontally
-}
-
-function flipCard() {
+  }
+  
+  function flipCard() {
     const flashcard = document.querySelector(".flashcard");
     flashcard.classList.toggle("flip");
-}
-
-function nextFlashCard() {
+  }
+  
+  function nextFlashCard() {
     const flashcard = document.querySelector(".flashcard");
-
-    // Reset flip state if card is flipped
+  
+    // If the card is flipped, reset it before loading the next question
     if (flashcard.classList.contains("flip")) {
-        flashcard.classList.remove("flip");
+      flashcard.classList.remove("flip");
     }
-
-    // Check if the user has completed all questions
+  
+    // Check if all questions are completed
     if (currentIndex === flashcards.length - 1) {
-        showFinishPage();
-        return;
+      showFinishPage();
+      return;
     }
-
+  
     // Move to the next question
     currentIndex++;
     loadFlashCard();
-}
-
-function showFinishPage() {
+  }
+  
+  function showFinishPage() {
     document.querySelector(".flashcard-container").style.display = "none";
     document.querySelector(".counter").style.display = "none";
-    document.querySelector("button").innerText = "Restart"; // Update button text
-    document.querySelector("button").onclick = restartTest; // Assign restart function
-    document.getElementById("finishPage").style.display = "block"; // Show finish page
-}
-
-function restartTest() {
+    document.querySelector("button").innerText = "Restart"; // Change button text to "Restart"
+    document.querySelector("button").onclick = restartTest; // Assign restartTest function to button
+  }
+  
+  function restartTest() {
     currentIndex = 0;
-
-    // Restore flashcard and counter visibility
-    document.querySelector(".flashcard-container").style.display = "flex";
+  
+    // Restore the flashcard and counter
+    const flashcardContainer = document.querySelector(".flashcard-container");
+    flashcardContainer.style.display = "flex"; // Ensure container remains centered
     document.querySelector(".counter").style.display = "block";
-    document.querySelector("button").innerText = "Next Question"; // Restore button text
-    document.querySelector("button").onclick = nextFlashCard; // Assign next question function
-    document.getElementById("finishPage").style.display = "none"; // Hide finish page
-
-    // Load the first question
+    document.querySelector("button").innerText = "Next Question"; // Restore button text to "Next Question"
+    document.querySelector("button").onclick = nextFlashCard; // Restore nextFlashCard function to button
+    document.getElementById("finishPage").style.display = "none";
+  
+    // Load the first question and adjust the card size
     loadFlashCard();
-}
-
-// Add a click listener to flip the card
-document.querySelector(".flashcard").addEventListener("click", flipCard);
-
-// Load questions from the JSON file on startup
-loadQuestions();
+  }
+  
+  // Initialize the first card
+  loadFlashCard();
+  
+  // Add a click listener to flip the card
+  document.querySelector(".flashcard").addEventListener("click", flipCard);
