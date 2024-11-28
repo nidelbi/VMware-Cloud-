@@ -1,0 +1,18 @@
+[
+    {
+        "question": "What is 2 + 2?",
+        "answer": "4"
+    },
+    {
+        "question": "This is a very long text that needs to fit dynamically within the card.",
+        "answer": "The answer is dynamically displayed."
+    },
+    {
+        "question": "What is the square root of 16?",
+        "answer": "4"
+    },
+    {
+        "question": "What is the square root of 16?",
+        "answer": "4"
+    }
+]
