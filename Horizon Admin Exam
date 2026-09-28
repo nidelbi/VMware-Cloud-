@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Omnissa Horizon Administrator 1H0-25 — 100 Question Exam</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+    #app {
+      max-width: 900px;
+      margin: 40px auto;
+      background: #111827;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 24px;
+      color: #f9fafb;
+    }
+    .subtitle {
+      color: #9ca3af;
+      margin-bottom: 16px;
+    }
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+    .question-number {
+      font-weight: 600;
+      color: #93c5fd;
+    }
+    .progress {
+      font-size: 13px;
+      color: #6b7280;
+    }
+    .question-text {
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+    .options label {
+      display: block;
+      margin-bottom: 8px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: #1f2937;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .options input {
+      margin-right: 8px;
+    }
+    .options label:hover {
+      border-color: #3b82f6;
+    }
+    .nav-buttons {
+      margin-top: 18px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    button {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .btn-secondary {
+      background: #374151;
+      color: #e5e7eb;
+    }
+    .btn-primary {
+      background: #3b82f6;
+      color: #f9fafb;
+    }
+    .btn-primary:disabled {
+      background: #1f2937;
+      cursor: not-allowed;
+    }
+    #results {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid #1f2937;
+    }
+    .score {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .result-item {
+      margin-bottom: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #020617;
+    }
+    .correct {
+      color: #22c55e;
+      font-weight: 600;
+    }
+    .incorrect {
+      color: #ef4444;
+      font-weight: 600;
+    }
+    .explanation {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h1>Omnissa Horizon Administrator 1H0-25 — 100 Question Exam</h1>
+    <p class="subtitle">One question at a time. Multi-select supported. Full scoring + explanations.</p>
+
+    <div id="question-container"></div>
+
+    <div class="nav-buttons">
+      <button id="prev-btn" class="btn-secondary">Previous</button>
+      <button id="next-btn" class="btn-secondary">Next</button>
+      <button id="submit-btn" class="btn-primary">Submit Exam</button>
+    </div>
+
+    <div id="results"></div>
+  </div>
+
+  <script>
+    const questions = [
+      /* --- 1–10: Architecture / Connection Server / UAG / Protocols --- */
+      {
+        text: "Which Horizon component brokers sessions between authenticated users and desktops?",
+        options: ["UAG", "Horizon Agent", "Connection Server", "vCenter"],
+        correctIndices: [2],
+        type: "single",
+        explanation: "Connection Server handles authentication, entitlement, and brokering."
+      },
+      {
+        text: "External users fail after login but internal users succeed. Which component is likely misconfigured?",
+        options: ["Connection Server", "vCenter", "UAG", "DEM"],
+        correctIndices: [2],
+        type: "single",
+        explanation: "UAG handles external traffic and protocol tunneling."
+      },
+      {
+        text: "Which two protocols are optimized for WAN? (Choose 2)",
+        options: ["Blast Extreme", "PCoIP", "RDP", "SSH"],
+        correctIndices: [0,1],
+        type: "multi",
+        explanation: "Blast and PCoIP are optimized for WAN performance."
+      },
+      {
+        text: "Which port is required for Horizon admin and client access?",
+        options: ["80", "443", "3389", "8443"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "HTTPS on port 443."
+      },
+      {
+        text: "Replica Connection Servers require:",
+        options: ["Standalone install", "Pairing during install", "UAG first", "vCenter on both"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "Replica servers must be paired during installation."
+      },
+      {
+        text: "Which feature federates multiple Horizon pods?",
+        options: ["Instant Clones", "Cloud Pod Architecture", "App Volumes", "DEM"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "CPA creates a global entitlement namespace."
+      },
+      {
+        text: "Which two Blast settings improve WAN performance? (Choose 2)",
+        options: ["Enable H.264", "Increase FPS to 60", "Disable UDP", "Lower FPS to 24"],
+        correctIndices: [0,3],
+        type: "multi",
+        explanation: "H.264 improves compression; lowering FPS reduces bandwidth."
+      },
+      {
+        text: "Which Horizon component must be domain-joined?",
+        options: ["UAG", "Connection Server", "Horizon Client", "vCenter"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "Connection Servers must join AD."
+      },
+      {
+        text: "Which log helps troubleshoot brokering failures?",
+        options: ["viewagent.log", "log-connection-server.log", "uag-blast.log", "vmkernel.log"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "Connection Server logs show entitlement and brokering issues."
+      },
+      {
+        text: "Which component provides secure external access without VPN?",
+        options: ["Connection Server", "UAG", "DEM", "App Volumes Manager"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "UAG provides secure remote access."
+      },
+
+      /* --- 11–20: Instant Clones / vCenter / Pools --- */
+      {
+        text: "Instant Clones rely on which VM?",
+        options: ["Parent VM", "Replica VM", "Golden Image", "Writable Volume"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "Instant Clones use a replica VM created by vCenter."
+      },
+      {
+        text: "Which pool type reassigns desktops and is best for task workers?",
+        options: ["Manual", "Dedicated", "Floating", "RDSH"],
+        correctIndices: [2],
+        type: "single",
+        explanation: "Floating pools provide non-persistent desktops."
+      },
+      {
+        text: "Which two are required for Instant Clones? (Choose 2)",
+        options: ["vCenter", "UAG", "Parent VM running", "DEM"],
+        correctIndices: [0,2],
+        type: "multi",
+        explanation: "Instant Clones require vCenter and a running parent VM."
+      },
+      {
+        text: "Which setting controls maximum desktops in a pool?",
+        options: ["Minimum size", "Maximum size", "Protocol", "Tunnel mode"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "Maximum size defines the upper limit."
+      },
+      {
+        text: "Which pool type preserves user customizations?",
+        options: ["Floating", "Dedicated persistent", "RDSH", "Instant Clone non-persistent"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "Dedicated persistent pools preserve customizations."
+      },
+      {
+        text: "Which two actions help refresh non-persistent Instant Clone pools? (Choose 2)",
+        options: ["Schedule maintenance", "Disable CPA", "Recompose parent", "Increase FPS"],
+        correctIndices: [0,2],
+        type: "multi",
+        explanation: "Maintenance and recomposing parent images keep pools clean."
+      },
+      {
+        text: "Which component must have permissions to create Instant Clones?",
+        options: ["DEM", "vCenter", "UAG", "RDSH"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "vCenter performs clone operations."
+      },
+      {
+        text: "Which pool type is best for developers needing persistent desktops?",
+        options: ["Floating non-persistent", "Dedicated persistent", "RDSH apps", "Manual pool"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "Dedicated persistent pools preserve state."
+      },
+      {
+        text: "Manual pools are typically used when:",
+        options: ["Desktops are pre-created", "Instant Clones are required", "RDSH is used", "CPA is enabled"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "Manual pools use existing VMs."
+      },
+      {
+        text: "Which two are valid pool assignment types? (Choose 2)",
+        options: ["Dedicated", "Floating", "Replica", "Writable"],
+        correctIndices: [0,1],
+        type: "multi",
+        explanation: "Pools can be dedicated or floating."
+      },
+
+      /* --- 21–30: App Volumes / DEM / Profiles --- */
+      {
+        text: "Which feature delivers apps without modifying the base image?",
+        options: ["Instant Clones", "App Volumes", "CPA", "True SSO"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "App Volumes delivers apps via AppStacks/Packages."
+      },
+      {
+        text: "Writable Volumes store:",
+        options: ["User profiles only", "User-installed apps and data", "Golden image", "Replica VM"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "Writable Volumes store user-installed apps and data."
+      },
+      {
+        text: "DEM manages:",
+        options: ["User environment settings", "vCenter hosts", "UAG tunnels", "CPA federation"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "DEM manages user personalization and policies."
+      },
+      {
+        text: "Which two are DEM capabilities? (Choose 2)",
+        options: ["Profile migration", "App packaging", "Logon optimization", "Replica creation"],
+        correctIndices: [0,2],
+        type: "multi",
+        explanation: "DEM handles profile migration and logon optimization."
+      },
+      {
+        text: "App Volumes Packages replace:",
+        options: ["AppStacks", "Writable Volumes", "Full Clones", "DEM configs"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "Packages are the modern replacement for AppStacks."
+      },
+      {
+        text: "Which component applies DEM configuration at logon?",
+        options: ["DEM Agent", "UAG", "Connection Server", "vCenter"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "DEM Agent runs in the guest OS."
+      },
+      {
+        text: "Which two storage types are commonly used for App Volumes? (Choose 2)",
+        options: ["vSAN", "NFS", "Tape", "Object storage"],
+        correctIndices: [0,1],
+        type: "multi",
+        explanation: "App Volumes typically uses vSAN or NFS."
+      },
+      {
+        text: "DEM configuration files are usually stored on:",
+        options: ["Local C drive", "Network share", "UAG", "vCenter"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "DEM uses a central network share."
+      },
+      {
+        text: "Which feature can reduce GPO complexity by centralizing user settings?",
+        options: ["DEM", "CPA", "UAG", "OSOT"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "DEM centralizes user environment settings."
+      },
+      {
+        text: "Writable Volumes are typically assigned:",
+        options: ["Per pool", "Per user", "Per pod", "Per UAG"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "Writable Volumes are user-specific."
+      },
+
+      /* --- 31–40: RDSH / Published Apps --- */
+      {
+        text: "RDSH farms provide:",
+        options: ["Persistent desktops", "Published apps and session desktops", "Replica VMs", "CPA federation"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "RDSH farms deliver session-based desktops and apps."
+      },
+      {
+        text: "Which two are required for RDSH apps? (Choose 2)",
+        options: ["RDSH servers", "DEM", "Connection Server", "Writable Volumes"],
+        correctIndices: [0,2],
+        type: "multi",
+        explanation: "RDSH servers and Connection Servers are required."
+      },
+      {
+        text: "RDSH scaling is best achieved by:",
+        options: ["Adding more RDSH servers", "Increasing CPU on one server", "Adding UAGs", "Adding replicas"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "RDSH scales horizontally."
+      },
+      {
+        text: "Published apps require:",
+        options: ["AppStacks", "RDSH farm", "Instant Clones", "Writable Volumes"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "Published apps run on RDSH farms."
+      },
+      {
+        text: "Which protocol is commonly used for RDSH apps in Horizon?",
+        options: ["Blast", "PCoIP", "RDP", "SSH"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "Blast is optimized for RDSH apps."
+      },
+      {
+        text: "Which two OS roles must be installed on RDSH servers? (Choose 2)",
+        options: ["Remote Desktop Session Host", "DNS Server", "File Server", "Remote Desktop Licensing (if required)"],
+        correctIndices: [0,3],
+        type: "multi",
+        explanation: "RDSH servers need RDSH role and licensing as appropriate."
+      },
+      {
+        text: "RDSH farms are grouped in Horizon as:",
+        options: ["Pools", "Farms", "Pods", "Sites"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "RDSH servers are organized into farms."
+      },
+      {
+        text: "Which component brokers RDSH sessions?",
+        options: ["Connection Server", "UAG", "DEM", "vCenter"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "Connection Server brokers all Horizon sessions."
+      },
+      {
+        text: "Which two factors impact RDSH capacity planning? (Choose 2)",
+        options: ["User concurrency", "Application resource usage", "UAG version", "DEM version"],
+        correctIndices: [0,1],
+        type: "multi",
+        explanation: "Concurrency and app resource usage drive capacity."
+      },
+      {
+        text: "RDSH farms can host:",
+        options: ["Only desktops", "Only apps", "Both desktops and apps", "Only CPA pods"],
+        correctIndices: [2],
+        type: "single",
+        explanation: "RDSH farms can host both session desktops and apps."
+      },
+
+      /* --- 41–50: Certificates / Security / True SSO --- */
+      {
+        text: "True SSO requires:",
+        options: ["SAML IdP", "UAG only", "Writable Volumes", "RDSH"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "True SSO uses SAML + certificate authority."
+      },
+      {
+        text: "Which certificate type is recommended for external Horizon URLs?",
+        options: ["Self-signed", "Internal CA only", "Public CA", "Wildcard only"],
+        correctIndices: [2],
+        type: "single",
+        explanation: "Public CA avoids browser warnings."
+      },
+      {
+        text: "UAG supports which authentication method?",
+        options: ["SAML", "SSH", "Kerberos only", "RADIUS only"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "UAG supports SAML, RADIUS, MFA, etc."
+      },
+      {
+        text: "Which two improve Blast security? (Choose 2)",
+        options: ["TLS 1.2", "Disable UDP", "Strong ciphers", "Lower FPS"],
+        correctIndices: [0,2],
+        type: "multi",
+        explanation: "TLS 1.2 + strong ciphers improve security."
+      },
+      {
+        text: "True SSO eliminates:",
+        options: ["AD", "Password prompts", "UAG", "DEM"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "True SSO provides password-less login."
+      },
+      {
+        text: "Which component issues logon certificates for True SSO?",
+        options: ["Certificate authority", "UAG", "DEM", "vCenter"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "CA issues logon certificates."
+      },
+      {
+        text: "Which two are required to configure True SSO? (Choose 2)",
+        options: ["Enrollment server", "DEM", "SAML IdP", "RDSH farm"],
+        correctIndices: [0,2],
+        type: "multi",
+        explanation: "True SSO uses enrollment servers and SAML IdP."
+      },
+      {
+        text: "Replacing Horizon certificates typically involves:",
+        options: ["Connection Server only", "UAG only", "Both Connection Server and UAG", "DEM only"],
+        correctIndices: [2],
+        type: "single",
+        explanation: "External URLs often use UAG; internal may use Connection Server."
+      },
+      {
+        text: "Which protocol is used for secure Blast connections?",
+        options: ["HTTP", "HTTPS", "Telnet", "FTP"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "Blast uses HTTPS for secure transport."
+      },
+      {
+        text: "Which two help harden Horizon security? (Choose 2)",
+        options: ["Disable weak ciphers", "Use public CA certs", "Disable TLS", "Use HTTP only"],
+        correctIndices: [0,1],
+        type: "multi",
+        explanation: "Strong ciphers and trusted certs harden security."
+      },
+
+      /* --- 51–60: Monitoring / Optimization / Logs --- */
+      {
+        text: "Which tool provides Horizon session metrics?",
+        options: ["Log Insight", "Helpdesk Tool", "DEM", "UAG"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "Helpdesk Tool shows real-time session metrics."
+      },
+      {
+        text: "OSOT is used for:",
+        options: ["Optimizing Windows images", "Managing UAG", "CPA federation", "App packaging"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "OSOT optimizes Windows for VDI."
+      },
+      {
+        text: "Which two metrics indicate Blast performance issues? (Choose 2)",
+        options: ["High RTT", "Low FPS", "High CPU on UAG", "High disk latency"],
+        correctIndices: [0,1],
+        type: "multi",
+        explanation: "High RTT + low FPS indicate protocol issues."
+      },
+      {
+        text: "Which log shows UAG protocol tunnel issues?",
+        options: ["uag-blast.log", "viewagent.log", "vmkernel.log", "dem.log"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "UAG logs show tunnel failures."
+      },
+      {
+        text: "Which tool collects Horizon logs centrally?",
+        options: ["Log Insight", "DEM", "UAG", "RDSH"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "Log Insight aggregates logs."
+      },
+      {
+        text: "Which two are common OSOT optimizations? (Choose 2)",
+        options: ["Disable unnecessary services", "Enable all animations", "Reduce startup apps", "Disable TCP/IP"],
+        correctIndices: [0,2],
+        type: "multi",
+        explanation: "OSOT disables services and reduces startup load."
+      },
+      {
+        text: "Helpdesk Tool can show:",
+        options: ["Session latency", "vCenter cluster health", "UAG CPU usage", "DEM config files"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "Helpdesk Tool shows session metrics like latency."
+      },
+      {
+        text: "Which log is most useful on the Horizon Agent side?",
+        options: ["viewagent.log", "log-connection-server.log", "uag-blast.log", "vmkernel.log"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "Agent logs show guest-side issues."
+      },
+      {
+        text: "Which two help optimize Blast performance? (Choose 2)",
+        options: ["Use UDP", "Disable H.264", "Tune bandwidth profile", "Use HTTP only"],
+        correctIndices: [0,2],
+        type: "multi",
+        explanation: "UDP and bandwidth tuning improve performance."
+      },
+      {
+        text: "Log Insight can ingest logs from:",
+        options: ["Connection Server", "UAG", "vCenter", "All of the above"],
+        correctIndices: [3],
+        type: "single",
+        explanation: "Log Insight can ingest logs from multiple components."
+      },
+
+      /* --- 61–70: Troubleshooting / Scenarios --- */
+      {
+        text: "User authenticates but desktop fails to launch. Likely issue?",
+        options: ["Entitlement", "DNS", "Replica VM", "DEM"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "Incorrect entitlements block desktop launch."
+      },
+      {
+        text: "Instant Clone pool shows 'Provisioning error'. Which two should you check? (Choose 2)",
+        options: ["Parent VM running", "UAG tunnel", "vCenter permissions", "DEM config"],
+        correctIndices: [0,2],
+        type: "multi",
+        explanation: "Instant Clones require parent VM + vCenter permissions."
+      },
+      {
+        text: "User cannot resolve Connection Server FQDN. Fix?",
+        options: ["DNS", "UAG", "DEM", "CPA"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "DNS resolution is required."
+      },
+      {
+        text: "CPA global entitlements require:",
+        options: ["Two pods", "Writable Volumes", "DEM", "OSOT"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "CPA requires at least two pods."
+      },
+      {
+        text: "User reports slow login. Likely cause?",
+        options: ["DEM config", "UAG", "vCenter", "CPA"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "DEM misconfiguration can slow logins."
+      },
+      {
+        text: "User can launch desktop but experiences frequent disconnects. Which two should you check? (Choose 2)",
+        options: ["Network stability", "Blast UDP ports", "DEM GPOs", "CPA settings"],
+        correctIndices: [0,1],
+        type: "multi",
+        explanation: "Network and UDP ports affect session stability."
+      },
+      {
+        text: "Agent is not registering with Connection Server. Likely cause?",
+        options: ["Firewall blocking ports", "DEM misconfig", "CPA disabled", "OSOT not run"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "Firewall can block agent-to-broker communication."
+      },
+      {
+        text: "UAG shows tunnel errors. Which log do you check?",
+        options: ["uag-blast.log", "viewagent.log", "dem.log", "vmkernel.log"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "UAG logs show tunnel issues."
+      },
+      {
+        text: "User can connect internally but not externally. Likely issue?",
+        options: ["UAG configuration", "DEM profile", "CPA entitlements", "OSOT template"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "External access depends on UAG."
+      },
+      {
+        text: "RDSH sessions disconnect under load. Which two should you check? (Choose 2)",
+        options: ["CPU/memory on RDSH", "Network bandwidth", "DEM config", "CPA pods"],
+        correctIndices: [0,1],
+        type: "multi",
+        explanation: "Resource and network constraints cause disconnects."
+      },
+
+      /* --- 71–80: Design / Capacity / HA --- */
+      {
+        text: "High availability for Connection Servers is best achieved by:",
+        options: ["Single large server", "Multiple servers behind load balancer", "DNS round-robin only", "UAG only"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "Load-balanced Connection Servers provide HA."
+      },
+      {
+        text: "Which two factors drive Horizon capacity planning? (Choose 2)",
+        options: ["User concurrency", "Application resource usage", "DEM version", "UAG hostname"],
+        correctIndices: [0,1],
+        type: "multi",
+        explanation: "Concurrency and app usage drive capacity."
+      },
+      {
+        text: "Which component is key for multi-site Horizon design?",
+        options: ["CPA", "DEM", "OSOT", "Writable Volumes"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "CPA enables multi-site federation."
+      },
+      {
+        text: "Which two help design for DR? (Choose 2)",
+        options: ["Multiple pods", "Replicated Connection Servers", "Single site only", "No CPA"],
+        correctIndices: [0,1],
+        type: "multi",
+        explanation: "Multiple pods and replicated brokers support DR."
+      },
+      {
+        text: "Which storage technology is often used for VDI performance?",
+        options: ["Tape", "vSAN", "CD-ROM", "Floppy"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "vSAN is common for VDI."
+      },
+      {
+        text: "Which two help scale UAG? (Choose 2)",
+        options: ["Multiple UAG appliances", "Load balancer", "Single UAG only", "Disable TLS"],
+        correctIndices: [0,1],
+        type: "multi",
+        explanation: "Multiple UAGs behind a load balancer scale access."
+      },
+      {
+        text: "Which design choice improves user experience over WAN?",
+        options: ["Blast with UDP", "RDP only", "Disable H.264", "HTTP only"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "Blast with UDP is optimized for WAN."
+      },
+      {
+        text: "Which component must be sized for concurrent sessions?",
+        options: ["Connection Server", "DEM share", "OSOT template", "CPA config"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "Connection Servers must handle concurrent sessions."
+      },
+      {
+        text: "Which two are common bottlenecks in Horizon? (Choose 2)",
+        options: ["Storage IOPS", "Network bandwidth", "DEM version", "CPA name"],
+        correctIndices: [0,1],
+        type: "multi",
+        explanation: "Storage and network are typical bottlenecks."
+      },
+      {
+        text: "Which design element improves login times?",
+        options: ["Optimized GPOs and DEM", "More UAGs only", "Disable CPA", "Use HTTP"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "Optimized policies and DEM improve logins."
+      },
+
+      /* --- 81–90: Horizon Console / Roles / Admin --- */
+      {
+        text: "Which console is used to manage Horizon pools and entitlements?",
+        options: ["Horizon Console", "vCenter Web Client", "UAG admin UI", "DEM management console"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "Horizon Console manages pools and entitlements."
+      },
+      {
+        text: "Which two tasks can be done in Horizon Console? (Choose 2)",
+        options: ["Create desktop pools", "Configure CPA", "Run OSOT", "Configure DEM GPOs"],
+        correctIndices: [0,1],
+        type: "multi",
+        explanation: "Pools and CPA are managed in Horizon Console."
+      },
+      {
+        text: "Which role should be assigned to a helpdesk operator?",
+        options: ["Administrator", "Helpdesk Administrator", "CPA Architect", "DEM Editor"],
+        correctIndices: [1],
+        type: "single",
+        explanation: "Helpdesk Administrator role fits support staff."
+      },
+      {
+        text: "Which two objects are managed in Horizon Console? (Choose 2)",
+        options: ["Pools", "Farms", "DEM shares", "OSOT templates"],
+        correctIndices: [0,1],
+        type: "multi",
+        explanation: "Pools and farms are Horizon objects."
+      },
+      {
+        text: "Which component integrates with Horizon Console to show vSphere resources?",
+        options: ["vCenter", "UAG", "DEM", "Log Insight"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "vCenter provides resource info."
+      },
+      {
+        text: "Which two can be configured per pool? (Choose 2)",
+        options: ["Protocol preferences", "Max desktops", "DEM share path", "CPA pod name"],
+        correctIndices: [0,1],
+        type: "multi",
+        explanation: "Protocol and capacity are pool settings."
+      },
+      {
+        text: "Which setting controls whether users can reset their desktops?",
+        options: ["Pool reset policy", "CPA config", "DEM policy", "UAG tunnel mode"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "Reset policy is configured per pool."
+      },
+      {
+        text: "Which two can be entitlements targets? (Choose 2)",
+        options: ["AD users", "AD groups", "vCenter clusters", "UAG appliances"],
+        correctIndices: [0,1],
+        type: "multi",
+        explanation: "Entitlements are assigned to users and groups."
+      },
+      {
+        text: "Which Horizon role has full administrative rights?",
+        options: ["Administrator", "Helpdesk Administrator", "CPA Viewer", "DEM Operator"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "Administrator has full rights."
+      },
+      {
+        text: "Which component stores Horizon configuration data?",
+        options: ["Connection Server LDAP", "UAG", "DEM share", "OSOT template"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "Connection Server uses an LDAP-based configuration store."
+      },
+
+      /* --- 91–100: Mixed Review --- */
+      {
+        text: "Which protocol is recommended for modern Horizon deployments?",
+        options: ["RDP", "PCoIP", "Blast Extreme", "SSH"],
+        correctIndices: [2],
+        type: "single",
+        explanation: "Blast is optimized for modern networks."
+      },
+      {
+        text: "Which two improve Instant Clone performance? (Choose 2)",
+        options: ["Fast storage", "Parent VM powered on", "DEM enabled", "UAG optimized"],
+        correctIndices: [0,1],
+        type: "multi",
+        explanation: "Instant Clones rely on fast storage + running parent VM."
+      },
+      {
+        text: "Which Horizon component handles entitlements?",
+        options: ["Connection Server", "UAG", "DEM", "vCenter"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "Connection Server enforces entitlements."
+      },
+      {
+        text: "Which two are required for True SSO? (Choose 2)",
+        options: ["SAML IdP", "Certificate authority", "UAG only", "DEM"],
+        correctIndices: [0,1],
+        type: "multi",
+        explanation: "True SSO requires SAML + certificate authority."
+      },
+      {
+        text: "Which component handles protocol tunneling?",
+        options: ["UAG", "Connection Server", "DEM", "vCenter"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "UAG handles protocol tunneling."
+      },
+      {
+        text: "Which two are common causes of poor Blast performance? (Choose 2)",
+        options: ["High latency", "Low bandwidth", "DEM misconfig", "CPA disabled"],
+        correctIndices: [0,1],
+        type: "multi",
+        explanation: "Latency and bandwidth affect Blast performance."
+      },
+      {
+        text: "Which component is responsible for creating Instant Clones?",
+        options: ["vCenter", "Connection Server", "UAG", "DEM"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "vCenter performs clone operations."
+      },
+      {
+        text: "Which two are Horizon desktop pool types? (Choose 2)",
+        options: ["Dedicated", "Floating", "Writable", "Replica"],
+        correctIndices: [0,1],
+        type: "multi",
+        explanation: "Pools can be dedicated or floating."
+      },
+      {
+        text: "Which feature allows multiple pods to share global entitlements?",
+        options: ["CPA", "DEM", "OSOT", "Writable Volumes"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "Cloud Pod Architecture provides global entitlements."
+      },
+      {
+        text: "Which tool should you use to optimize Windows for Horizon?",
+        options: ["OSOT", "DEM", "UAG admin UI", "Log Insight"],
+        correctIndices: [0],
+        type: "single",
+        explanation: "OSOT is the OS Optimization Tool."
+      }
+    ];
+
+    let currentIndex = 0;
+    const answers = {}; // key: question index, value: array of selected option indices
+
+    const questionContainer = document.getElementById("question-container");
+    const prevBtn = document.getElementById("prev-btn");
+    const nextBtn = document.getElementById("next-btn");
+    const submitBtn = document.getElementById("submit-btn");
+    const resultsDiv = document.getElementById("results");
+
+    function renderQuestion(index) {
+      const q = questions[index];
+      questionContainer.innerHTML = "";
+
+      const header = document.createElement("div");
+      header.className = "question-header";
+
+      const number = document.createElement("div");
+      number.className = "question-number";
+      number.textContent = `Question ${index + 1}`;
+      header.appendChild(number);
+
+      const progress = document.createElement("div");
+      progress.className = "progress";
+      progress.textContent = `Q${index + 1} of ${questions.length}`;
+      header.appendChild(progress);
+
+      questionContainer.appendChild(header);
+
+      const text = document.createElement("div");
+      text.className = "question-text";
+      text.textContent = q.text;
+      questionContainer.appendChild(text);
+
+      const optionsDiv = document.createElement("div");
+      optionsDiv.className = "options";
+
+      const saved = answers[index] || [];
+
+      q.options.forEach((opt, optIndex) => {
+        const id = `q${index}_opt${optIndex}`;
+        const label = document.createElement("label");
+        const input = document.createElement("input");
+        input.type = q.type === "single" ? "radio" : "checkbox";
+        input.name = `q${index}`;
+        input.value = optIndex;
+        input.id = id;
+
+        if (saved.includes(optIndex)) {
+          input.checked = true;
+        }
+
+        input.addEventListener("change", () => {
+          if (q.type === "single") {
+            answers[index] = [optIndex];
+          } else {
+            const current = answers[index] || [];
+            if (input.checked) {
+              if (!current.includes(optIndex)) current.push(optIndex);
+            } else {
+              const pos = current.indexOf(optIndex);
+              if (pos !== -1) current.splice(pos, 1);
+            }
+            answers[index] = current;
+          }
+        });
+
+        label.htmlFor = id;
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(opt));
+        optionsDiv.appendChild(label);
+      });
+
+      questionContainer.appendChild(optionsDiv);
+
+      prevBtn.disabled = index === 0;
+      nextBtn.disabled = index === questions.length - 1;
+    }
+
+    prevBtn.addEventListener("click", () => {
+      if (currentIndex > 0) {
+        currentIndex--;
+        renderQuestion(currentIndex);
+      }
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (currentIndex < questions.length - 1) {
+        currentIndex++;
+        renderQuestion(currentIndex);
+      }
+    });
+
+    submitBtn.addEventListener("click", () => {
+      let correctCount = 0;
+      resultsDiv.innerHTML = "";
+
+      questions.forEach((q, index) => {
+        const selected = answers[index] || [];
+        const correct = q.correctIndices.slice().sort();
+        const chosen = selected.slice().sort();
+
+        const isCorrect =
+          correct.length === chosen.length &&
+          correct.every((v, i) => v === chosen[i]);
+
+        if (isCorrect) correctCount++;
+
+        const item = document.createElement("div");
+        item.className = "result-item";
+
+        const status = document.createElement("div");
+        status.className = isCorrect ? "correct" : "incorrect";
+        status.textContent = `Q${index + 1}: ${isCorrect ? "Correct" : "Incorrect"}`;
+        item.appendChild(status);
+
+        const yourAns = document.createElement("div");
+        const yourText =
+          selected.length === 0
+            ? "Your answer: (no selection)"
+            : "Your answer: " +
+              selected.map(i => q.options[i]).join(", ");
+        yourAns.textContent = yourText;
+        item.appendChild(yourAns);
+
+        const correctAns = document.createElement("div");
+        correctAns.textContent =
+          "Correct answer: " +
+          q.correctIndices.map(i => q.options[i]).join(", ");
+        item.appendChild(correctAns);
+
+        const expl = document.createElement("div");
+        expl.className = "explanation";
+        expl.textContent = "Explanation: " + q.explanation;
+        item.appendChild(expl);
+
+        resultsDiv.appendChild(item);
+      });
+
+      const scorePercent = Math.round((correctCount / questions.length) * 100);
+      const scoreHeader = document.createElement("div");
+      scoreHeader.className = "score";
+      scoreHeader.textContent =
+        `Score: ${correctCount} / ${questions.length} (${scorePercent}%)`;
+      resultsDiv.insertBefore(scoreHeader, resultsDiv.firstChild);
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    renderQuestion(currentIndex);
+  </script>
+</body>
+</html>
